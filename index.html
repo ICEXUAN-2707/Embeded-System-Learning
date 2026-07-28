@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="STM32 双循环学习导航器五节点原型">
+  <title>STM32 学习导航器</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">跳到主要内容</a>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">STM32 LEARNING NAVIGATOR</p>
+      <h1>学习导航器</h1>
+    </div>
+    <div class="save-state" aria-live="polite">
+      <span class="save-dot" aria-hidden="true"></span>
+      <span id="save-label">尚未保存</span>
+    </div>
+  </header>
+
+  <nav class="primary-nav" aria-label="主要页面">
+    <button class="nav-button is-active" type="button" data-view="home" aria-current="page">继续学习</button>
+    <button class="nav-button" type="button" data-view="tree">知识树</button>
+  </nav>
+
+  <main id="main-content">
+    <section id="home-view" class="view" aria-labelledby="home-title">
+      <div class="hero-grid">
+        <article class="continue-card">
+          <div class="card-kicker">
+            <span id="loop-badge" class="loop-badge"></span>
+            <span id="status-badge" class="status-badge"></span>
+          </div>
+          <p id="breadcrumb" class="breadcrumb"></p>
+          <h2 id="home-title"></h2>
+          <p id="recommendation-reason" class="reason"></p>
+          <p id="home-objective" class="objective"></p>
+          <div class="next-task">
+            <span>下一项任务</span>
+            <strong id="next-task-label"></strong>
+          </div>
+          <div class="hero-actions">
+            <button id="continue-button" class="button button-primary" type="button">开始学习</button>
+            <button class="button button-secondary" type="button" data-go-tree>查看知识树</button>
+          </div>
+        </article>
+
+        <aside class="summary-panel" aria-label="学习摘要">
+          <div class="summary-item">
+            <span>当前循环核心进度</span>
+            <strong id="loop-progress"></strong>
+          </div>
+          <div class="progress-track" aria-hidden="true">
+            <span id="loop-progress-bar"></span>
+          </div>
+          <div class="summary-item">
+            <span>最近笔记</span>
+            <p id="recent-note"></p>
+          </div>
+          <div class="summary-item">
+            <span>上次保存</span>
+            <p id="last-saved"></p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="tree-view" class="view" aria-labelledby="tree-title" hidden>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">STAGE → MODULE → NODE</p>
+          <h2 id="tree-title">五节点知识树</h2>
+        </div>
+        <p>状态按当前循环显示，两个循环互不覆盖。</p>
+      </div>
+      <div id="tree-container"></div>
+    </section>
+
+    <section id="learning-view" class="view" aria-labelledby="learning-title" hidden>
+      <button id="back-button" class="text-button" type="button">← 返回继续学习</button>
+      <article class="learning-card">
+        <header class="learning-header">
+          <div>
+            <p id="learning-breadcrumb" class="breadcrumb"></p>
+            <h2 id="learning-title"></h2>
+          </div>
+          <div class="node-tags">
+            <span id="importance-tag"></span>
+            <span id="type-tag"></span>
+          </div>
+        </header>
+
+        <div class="loop-switcher" aria-label="学习循环">
+          <button type="button" data-loop="preview">第一循环 · 认知预习</button>
+          <button type="button" data-loop="practice">第二循环 · 动手实操</button>
+        </div>
+        <div id="loop-notice" class="notice" hidden></div>
+
+        <section class="card-section">
+          <h3>本轮目标</h3>
+          <p id="learning-objective"></p>
+          <p id="learning-reason" class="reason compact"></p>
+        </section>
+
+        <section class="card-section">
+          <h3>局部学习关系</h3>
+          <div id="dependency-map" class="dependency-map"></div>
+        </section>
+
+        <section class="card-section">
+          <h3>外部资源</h3>
+          <div id="resources-list" class="resources-list"></div>
+        </section>
+
+        <div class="work-grid">
+          <section class="card-section">
+            <h3>任务清单</h3>
+            <div id="tasks-list" class="check-list"></div>
+          </section>
+          <section class="card-section">
+            <h3>自我验收</h3>
+            <div id="checks-list" class="check-list"></div>
+          </section>
+        </div>
+
+        <section class="card-section">
+          <label for="note-input"><strong>简短笔记</strong></label>
+          <textarea id="note-input" rows="5" maxlength="1000" placeholder="记录一个关键理解或仍需确认的问题……"></textarea>
+          <p class="field-hint">输入后约 500ms 自动保存。本循环的笔记不会覆盖另一循环。</p>
+        </section>
+
+        <section class="status-panel" aria-labelledby="status-title">
+          <div>
+            <h3 id="status-title">学习状态</h3>
+            <p id="gate-message" aria-live="polite"></p>
+          </div>
+          <div class="status-actions">
+            <button class="button button-quiet" type="button" data-status="review">标记待复习</button>
+            <button class="button button-quiet" type="button" data-status="blocked">标记阻塞</button>
+            <button id="pass-button" class="button button-primary" type="button">确认通过</button>
+          </div>
+          <div id="block-editor" class="block-editor" hidden>
+            <label for="block-reason">阻塞原因</label>
+            <input id="block-reason" type="text" maxlength="200" placeholder="例如：需要先补充电平基础">
+            <button id="save-block-button" class="button button-secondary" type="button">保存原因</button>
+            <button id="clear-block-button" class="text-button" type="button">解除阻塞</button>
+          </div>
+        </section>
+
+        <footer class="node-navigation">
+          <button id="previous-node" class="button button-secondary" type="button">← 上一个</button>
+          <button id="next-node" class="button button-secondary" type="button">下一个 →</button>
+        </footer>
+      </article>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="curriculum.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
