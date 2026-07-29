@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="STM32 双循环学习导航器">
+  <title>STM32 学习导航器</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">跳到主要内容</a>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">STM32 LEARNING NAVIGATOR</p>
+      <h1>学习导航器</h1>
+    </div>
+    <div class="save-state" aria-live="polite">
+      <span class="save-dot" aria-hidden="true"></span>
+      <span id="save-label">尚未保存</span>
+    </div>
+  </header>
+
+  <nav class="primary-nav" aria-label="主要页面">
+    <button class="nav-button is-active" type="button" data-view="home" aria-current="page">继续学习</button>
+    <button class="nav-button" type="button" data-view="tree">知识树</button>
+    <button class="nav-button" type="button" data-view="manage">自定义内容</button>
+    <button class="nav-button" type="button" data-view="progress">进度与数据</button>
+  </nav>
+
+  <main id="main-content">
+    <section id="home-view" class="view" aria-labelledby="home-title">
+      <div class="hero-grid">
+        <article class="continue-card">
+          <div class="card-kicker">
+            <span id="loop-badge" class="loop-badge"></span>
+            <span id="status-badge" class="status-badge"></span>
+          </div>
+          <p id="breadcrumb" class="breadcrumb"></p>
+          <h2 id="home-title"></h2>
+          <p id="recommendation-reason" class="reason"></p>
+          <p id="home-objective" class="objective"></p>
+          <div class="next-task">
+            <span>下一项任务</span>
+            <strong id="next-task-label"></strong>
+          </div>
+          <div class="hero-actions">
+            <button id="continue-button" class="button button-primary" type="button">开始学习</button>
+            <button class="button button-secondary" type="button" data-go-tree>查看知识树</button>
+          </div>
+        </article>
+
+        <aside class="summary-panel" aria-label="学习摘要">
+          <div class="summary-item">
+            <span>当前循环核心进度</span>
+            <strong id="loop-progress"></strong>
+          </div>
+          <div class="progress-track" aria-hidden="true">
+            <span id="loop-progress-bar"></span>
+          </div>
+          <div class="summary-item">
+            <span>最近笔记</span>
+            <p id="recent-note"></p>
+          </div>
+          <div class="summary-item">
+            <span>上次保存</span>
+            <p id="last-saved"></p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="tree-view" class="view" aria-labelledby="tree-title" hidden>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">STAGE → MODULE → NODE</p>
+          <h2 id="tree-title">完整知识树</h2>
+        </div>
+        <p>状态按当前循环显示，两个循环互不覆盖。</p>
+      </div>
+      <div class="tree-toolbar" aria-label="知识树筛选">
+        <label for="status-filter">状态筛选</label>
+        <select id="status-filter">
+          <option value="all">全部状态</option>
+          <option value="not_started">未开始</option>
+          <option value="learning">学习中</option>
+          <option value="review">待复习</option>
+          <option value="blocked">阻塞</option>
+          <option value="passed">已通过</option>
+        </select>
+        <span id="filter-result" aria-live="polite"></span>
+      </div>
+      <div id="tree-container"></div>
+    </section>
+
+    <section id="manage-view" class="view" aria-labelledby="manage-title" hidden>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">PERSONAL NAVIGATION</p>
+          <h2 id="manage-title">自定义内容</h2>
+        </div>
+        <p>添加的是短导航信息，不是完整教材正文。内置路线不会被改写或删除。</p>
+      </div>
+
+      <div class="manage-grid">
+        <section class="manage-card" aria-labelledby="custom-node-title">
+          <h3 id="custom-node-title">自定义知识点</h3>
+          <form id="custom-node-form">
+            <input id="custom-node-id" type="hidden">
+            <div class="form-grid">
+              <label>名称
+                <input id="custom-title" type="text" maxlength="60" required>
+              </label>
+              <label>所属模块
+                <select id="custom-module" required></select>
+              </label>
+              <label>类型
+                <select id="custom-type">
+                  <option value="theory">理论</option>
+                  <option value="experiment">实验</option>
+                </select>
+              </label>
+              <label>重要性
+                <select id="custom-importance">
+                  <option value="optional">选学</option>
+                  <option value="core">核心</option>
+                </select>
+              </label>
+              <label>顺序
+                <input id="custom-order" type="number" min="1" max="9999" value="900">
+              </label>
+            </div>
+            <label>一句话目标
+              <input id="custom-objective" type="text" maxlength="180" required>
+            </label>
+            <fieldset>
+              <legend>直接前置（可多选）</legend>
+              <div id="custom-prerequisites" class="option-grid"></div>
+            </fieldset>
+            <div class="form-grid">
+              <label>第一循环任务（每行一项）
+                <textarea id="custom-preview-tasks" rows="3"></textarea>
+              </label>
+              <label>第一循环验收（每行一项）
+                <textarea id="custom-preview-checks" rows="3"></textarea>
+              </label>
+              <label>第二循环任务（每行一项）
+                <textarea id="custom-practice-tasks" rows="3"></textarea>
+              </label>
+              <label>第二循环验收（每行一项）
+                <textarea id="custom-practice-checks" rows="3"></textarea>
+              </label>
+            </div>
+            <div class="form-actions">
+              <button class="button button-primary" type="submit">保存知识点</button>
+              <button id="cancel-node-edit" class="button button-secondary" type="button" hidden>取消编辑</button>
+            </div>
+          </form>
+          <div id="custom-node-list" class="manage-list"></div>
+        </section>
+
+        <section class="manage-card" aria-labelledby="personal-resource-title">
+          <h3 id="personal-resource-title">个人资源</h3>
+          <form id="personal-resource-form">
+            <label>添加到知识点
+              <select id="resource-node" required></select>
+            </label>
+            <label>资源名称
+              <input id="resource-title" type="text" maxlength="80" required>
+            </label>
+            <label>URL
+              <input id="resource-url" type="url" placeholder="https://…" required>
+            </label>
+            <label>学习范围
+              <input id="resource-scope" type="text" maxlength="160" required>
+            </label>
+            <label>关注重点
+              <input id="resource-focus" type="text" maxlength="160" required>
+            </label>
+            <label>停止标准
+              <input id="resource-stop" type="text" maxlength="160" required>
+            </label>
+            <button class="button button-primary" type="submit">添加个人资源</button>
+          </form>
+          <div id="personal-resource-list" class="manage-list"></div>
+        </section>
+      </div>
+    </section>
+
+    <section id="progress-view" class="view" aria-labelledby="progress-title" hidden>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">PROGRESS &amp; LOCAL DATA</p>
+          <h2 id="progress-title">进度与数据</h2>
+        </div>
+        <p>只有已通过的核心节点计入主进度；选学单独统计。所有数据只保存在当前浏览器。</p>
+      </div>
+
+      <div id="loop-progress-cards" class="progress-grid"></div>
+
+      <div class="progress-layout">
+        <section class="manage-card" aria-labelledby="scope-progress-title">
+          <h3 id="scope-progress-title">阶段与模块进度</h3>
+          <div id="scope-progress-list" class="scope-progress-list"></div>
+        </section>
+        <section class="manage-card" aria-labelledby="milestone-title">
+          <h3 id="milestone-title">已解锁里程碑</h3>
+          <div id="milestone-list" class="manage-list"></div>
+        </section>
+      </div>
+
+      <section class="manage-card progress-section" aria-labelledby="review-summary-title">
+        <h3 id="review-summary-title">实验复盘汇总</h3>
+        <div id="experiment-review-list" class="review-summary-list"></div>
+      </section>
+
+      <section class="manage-card progress-section" aria-labelledby="backup-title">
+        <h3 id="backup-title">JSON 备份与恢复</h3>
+        <p class="field-hint">导入会先校验并显示摘要，确认后才覆盖；失败不会改动现有数据。</p>
+        <div class="form-actions backup-actions">
+          <button id="export-data" class="button button-primary" type="button">导出 JSON</button>
+          <button id="choose-import" class="button button-secondary" type="button">选择 JSON 导入</button>
+          <input id="import-file" type="file" accept="application/json,.json" hidden>
+          <button id="undo-import" class="button button-secondary" type="button" disabled>撤销本次导入</button>
+          <button id="restore-built-in" class="button button-secondary" type="button">恢复内置路线</button>
+          <button id="clear-personal-data" class="button button-danger" type="button">清空个人数据</button>
+        </div>
+        <div id="import-summary" class="notice" hidden></div>
+      </section>
+    </section>
+
+    <section id="learning-view" class="view" aria-labelledby="learning-title" hidden>
+      <button id="back-button" class="text-button" type="button">← 返回继续学习</button>
+      <article class="learning-card">
+        <header class="learning-header">
+          <div>
+            <p id="learning-breadcrumb" class="breadcrumb"></p>
+            <h2 id="learning-title"></h2>
+          </div>
+          <div class="node-tags">
+            <span id="importance-tag"></span>
+            <span id="type-tag"></span>
+          </div>
+        </header>
+
+        <div class="loop-switcher" aria-label="学习循环">
+          <button type="button" data-loop="preview">第一循环 · 认知预习</button>
+          <button type="button" data-loop="practice">第二循环 · 动手实操</button>
+        </div>
+        <div id="loop-notice" class="notice" hidden></div>
+
+        <section class="card-section">
+          <h3>本轮目标</h3>
+          <p id="learning-objective"></p>
+          <p id="learning-reason" class="reason compact"></p>
+        </section>
+
+        <section class="card-section">
+          <h3>局部学习关系</h3>
+          <div id="dependency-map" class="dependency-map"></div>
+        </section>
+
+        <section class="card-section">
+          <h3>外部资源</h3>
+          <div id="resources-list" class="resources-list"></div>
+        </section>
+
+        <div class="work-grid">
+          <section class="card-section">
+            <h3>任务清单</h3>
+            <div id="tasks-list" class="check-list"></div>
+          </section>
+          <section class="card-section">
+            <h3>自我验收</h3>
+            <div id="checks-list" class="check-list"></div>
+          </section>
+        </div>
+
+        <section class="card-section">
+          <label for="note-input"><strong>简短笔记</strong></label>
+          <textarea id="note-input" rows="5" maxlength="1000" placeholder="记录一个关键理解或仍需确认的问题……"></textarea>
+          <p class="field-hint">输入后约 500ms 自动保存。本循环的笔记不会覆盖另一循环。</p>
+        </section>
+
+        <section id="experiment-review-section" class="card-section" hidden>
+          <h3>实验复盘</h3>
+          <p class="field-hint">纯文本草稿约 500ms 自动保存，并按知识点与循环分别记录。</p>
+          <div class="review-grid">
+            <label>实验目标<textarea id="review-goal" rows="2" maxlength="1000"></textarea></label>
+            <label>使用器材<textarea id="review-equipment" rows="2" maxlength="1000"></textarea></label>
+            <label>接线情况<textarea id="review-wiring" rows="2" maxlength="1000"></textarea></label>
+            <label>修改内容<textarea id="review-changes" rows="2" maxlength="1000"></textarea></label>
+            <label>预期现象<textarea id="review-expected" rows="2" maxlength="1000"></textarea></label>
+            <label>实际现象<textarea id="review-actual" rows="2" maxlength="1000"></textarea></label>
+            <label>出现的问题<textarea id="review-problems" rows="2" maxlength="1000"></textarea></label>
+            <label>原因判断<textarea id="review-cause" rows="2" maxlength="1000"></textarea></label>
+            <label>解决方法<textarea id="review-solution" rows="2" maxlength="1000"></textarea></label>
+            <label>如果重做会怎么改<textarea id="review-redo" rows="2" maxlength="1000"></textarea></label>
+            <label>下一次验证项<textarea id="review-next" rows="2" maxlength="1000"></textarea></label>
+          </div>
+        </section>
+
+        <section class="status-panel" aria-labelledby="status-title">
+          <div>
+            <h3 id="status-title">学习状态</h3>
+            <p id="gate-message" aria-live="polite"></p>
+          </div>
+          <div class="status-actions">
+            <button class="button button-quiet" type="button" data-status="review">标记待复习</button>
+            <button class="button button-quiet" type="button" data-status="blocked">标记阻塞</button>
+            <button id="pass-button" class="button button-primary" type="button">确认通过</button>
+          </div>
+          <div id="block-editor" class="block-editor" hidden>
+            <label for="block-reason">阻塞原因</label>
+            <input id="block-reason" type="text" maxlength="200" placeholder="例如：需要先补充电平基础">
+            <button id="save-block-button" class="button button-secondary" type="button">保存原因</button>
+            <button id="clear-block-button" class="text-button" type="button">解除阻塞</button>
+          </div>
+        </section>
+
+        <footer class="node-navigation">
+          <button id="previous-node" class="button button-secondary" type="button">← 上一个</button>
+          <button id="next-node" class="button button-secondary" type="button">下一个 →</button>
+        </footer>
+      </article>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="curriculum.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
