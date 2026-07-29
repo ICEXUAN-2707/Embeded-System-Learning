@@ -2,7 +2,7 @@
 
 面向 STM32 初学者的双循环学习导航器，使用原生 HTML、CSS 和 JavaScript 构建。
 
-正式入口：https://icexuan-2707.github.io/Embeded-System-Learning/
+在线预览（待最终浏览器视觉与控制台验收）：https://icexuan-2707.github.io/Embeded-System-Learning/
 
 运行文件：
 

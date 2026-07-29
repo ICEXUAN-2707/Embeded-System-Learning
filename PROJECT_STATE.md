@@ -63,7 +63,7 @@ T04（最终交付）
 - 跨标签页外部更新与当前防抖草稿合并，降低状态覆盖风险
 - T01～T03 功能、损坏数据、DOM 引用与静态服务完整回归
 - GitHub Pages 已按用户授权从 `gh-pages` 根目录启用
-- 正式入口：`https://icexuan-2707.github.io/Embeded-System-Learning/`
+- 在线预览（待最终浏览器视觉与控制台验收）：`https://icexuan-2707.github.io/Embeded-System-Learning/`
 - 源码合并提交：`e6631ed`
 - 发布提交：`c8e0836`
 
